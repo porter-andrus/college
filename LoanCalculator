@@ -1,0 +1,83 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+
+
+double ratePerPeriod(double annualInterest, double payOffYears){
+    double rate = 0.0;
+    
+    rate = (annualInterest/100.0)/12.0;
+    
+    return rate;
+}
+
+int numberOfPayments(int years){
+    return years * 12;
+}
+
+// payment = P = r(PV) / 1 - (1 + r) ^-n 
+double getPaymentAmount(double r, int n, double PV){
+    double payment = 0.0;
+    
+    int negN = 0 - n;
+    payment = (r * PV) / (1 - pow((1 + r), negN));
+    
+    return payment;
+}
+
+double getInterestFromAmount(double interestRate, double loanAmount){
+    return loanAmount * interestRate;
+}
+
+void printPaymentSchedule(double loanAmount, double interestRatePerPeriod, int numberOfPayments){
+    
+    double balance = loanAmount;
+    int paymentLeft = numberOfPayments;
+    
+    cout << "Payment\tLoan Balance\tTo principle\tTo interest" << endl;
+    for(int i = 1; i <= numberOfPayments; i++){
+        
+        
+        double payment = getPaymentAmount(interestRatePerPeriod, paymentLeft--, balance);
+        double toInterest = getInterestFromAmount(interestRatePerPeriod, balance);
+        double toPrinciple = payment - toInterest;
+        
+        cout << i << "\t" << balance << "\t\t" << toPrinciple << "\t\t" << toInterest << endl;
+        balance = balance - toPrinciple;
+    }
+    
+}
+
+int main() {
+
+    cout << "This program will calculate the payment for a given loan amount.\nThen list the entire payment schedule." << endl;
+
+    double loanAmount;
+    double annualInterest;
+    double payOffYears;
+
+    cout << "\nEnter the loan amount. ";
+    cin >> loanAmount;
+    cout << "\nEnter the annual interest rate. ";
+    cin >> annualInterest;
+    
+    cout << "\nEnter the number of years to pay off the loan. ";
+    cin >> payOffYears;
+
+    double interestRatePerPeriod = ratePerPeriod(annualInterest, payOffYears);
+    
+    cout << "interest rate per period: " << interestRatePerPeriod << endl;
+    
+    int numPayments = numberOfPayments(payOffYears);
+    cout << "number of payments: " << numPayments << endl;
+    
+    double payment = getPaymentAmount(interestRatePerPeriod, numPayments, loanAmount);
+    
+    cout << "payment: " << payment << endl;
+    
+    printPaymentSchedule(loanAmount, interestRatePerPeriod, numPayments);
+    
+    return 0;
+}
